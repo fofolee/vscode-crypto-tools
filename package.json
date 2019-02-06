@@ -1,0 +1,118 @@
+{
+	"name": "crypto-tools",
+	"displayName": "Crypto Tools",
+	"description": "Contains lots of encoding/decoding and encryption/decryption tools like base64、hash、urlencode、AES、RSA、Vigenere、Caesar、etc.,and additional provides some text manipulation functions",
+	"version": "0.0.1",
+	"publisher": "fofolee",
+	"engines": {
+		"vscode": "^1.30.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"keywords": [
+		"crypto",
+		"encode",
+		"decoden",
+		"encrypt",
+		"decrypt",
+		"text manipulation"
+	],
+	"bugs": {
+		"url": "https://github.com/fofolee/vscode-crypto-tools/issues",
+		"email": "fofolee@live.cn"
+	},
+	"homepage": "https://github.com/fofolee/vscode-crypto-tools/README.md",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/fofolee/vscode-crypto-tools.git"
+	},
+	"icon": "icon.png",
+	"activationEvents": [
+		"onCommand:crypto.EncodeDecode",
+		"onCommand:crypto.EncryptDecrypt",
+		"onCommand:crypto.textManipulation",
+		"onCommand:crypto.hexadecimalCalculator"
+	],
+	"main": "./extension.js",
+	"contributes": {
+		"commands": [{
+				"command": "crypto.EncodeDecode",
+				"title": "Encoding and Decoding",
+				"category": "🔐Crypto"
+			},
+			{
+				"command": "crypto.EncryptDecrypt",
+				"title": "Encryption and Decryption",
+				"category": "🔐Crypto"
+			},
+			{
+				"command": "crypto.textManipulation",
+				"title": "Text manipulation",
+				"category": "🔐Crypto"
+			},
+			{
+				"command": "crypto.hexadecimalCalculator",
+				"title": "Hexadecimal calculator",
+				"category": "🔐Crypto"
+			}
+		],
+		"menus": {
+			"editor/context": [{
+					"when": "editorHasSelection",
+					"command": "crypto.EncodeDecode",
+					"group": "7_modification"
+				},
+				{
+					"when": "editorHasSelection",
+					"command": "crypto.EncryptDecrypt",
+					"group": "7_modification"
+				}, {
+					"when": "editorHasSelection",
+					"command": "crypto.textManipulation",
+					"group": "7_modification"
+				}
+			]
+		},
+		"keybindings": [{
+			"command": "crypto.EncodeDecode",
+			"key": "ctrl+alt+d",
+			"when": "editorHasSelection"
+		}, {
+			"command": "crypto.EncryptDecrypt",
+			"key": "ctrl+alt+a",
+			"when": "editorHasSelection"
+		}, {
+			"command": "crypto.textManipulation",
+			"key": "ctrl+alt+t",
+			"when": "editorHasSelection"
+		},
+		{
+			"command": "crypto.hexadecimalCalculator",
+			"key": "ctrl+alt+c"
+		}
+	],
+		"languages": [{
+			"id": "Crypto-output",
+			"mimetypes": [
+				"text/x-code-output"
+			]
+		}],
+		"grammars": [{
+			"language": "Crypto-output",
+			"scopeName": "Crypto.output",
+			"path": "./syntaxes/crypto-tools-output.tmLanguage"
+		}]
+	},
+	"scripts": {
+		"postinstall": "node ./node_modules/vscode/bin/install",
+		"test": "node ./node_modules/vscode/bin/test"
+	},
+	"devDependencies": {
+		"typescript": "^3.1.4",
+		"vscode": "^1.1.25",
+		"eslint": "^4.11.0",
+		"@types/node": "^8.10.25",
+		"@types/mocha": "^2.2.42"
+	}
+}

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+    <dict>
+        <key>scopeName</key>
+        <string>Crypto.output</string>
+        <key>name</key>
+        <string>Crypto-output</string>
+        <key>patterns</key>
+        <array>
+            <dict>
+                <key>match</key>
+                <string>.*◆.*</string>
+                <key>name</key>
+                <string>support.function</string>
+            </dict>
+            <dict>
+                <key>match</key>
+                <string>\[.⇐.\]|\[.⇒.\]</string>
+                <key>name</key>
+                <string>constant.numeric</string>
+            </dict>
+            <dict>
+                <key>match</key>
+                <string>\[.✔.\]</string>
+                <key>name</key>
+                <string>string.quoted</string>
+            </dict>
+            <dict>
+                <key>match</key>
+                <string>\[.✘.\]</string>
+                <key>name</key>
+                <string>invalid.deprecated</string>
+            </dict>
+             <dict>
+                <key>match</key>
+                <string>(^\-.*)</string>
+                <key>name</key>
+                <string>support.function</string>
+            </dict>
+        </array>
+    </dict>
+</plist>
