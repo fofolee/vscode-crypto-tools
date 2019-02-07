@@ -2,7 +2,7 @@
 	"name": "crypto-tools",
 	"displayName": "Crypto Tools",
 	"description": "Contains lots of encoding/decoding and encryption/decryption tools like base64、hash、urlencode、AES、RSA、Vigenere、Caesar、etc.,and additional provides some text manipulation functions",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"publisher": "fofolee",
 	"engines": {
 		"vscode": "^1.30.0"
@@ -16,7 +16,8 @@
 		"decoden",
 		"encrypt",
 		"decrypt",
-		"text manipulation"
+		"text manipulation",
+		"output color"
 	],
 	"bugs": {
 		"url": "https://github.com/fofolee/vscode-crypto-tools/issues",
@@ -32,7 +33,8 @@
 		"onCommand:crypto.EncodeDecode",
 		"onCommand:crypto.EncryptDecrypt",
 		"onCommand:crypto.textManipulation",
-		"onCommand:crypto.hexadecimalCalculator"
+		"onCommand:crypto.hexadecimalCalculator",
+		"onCommand:crypto.outputColorPatch"
 	],
 	"main": "./extension.js",
 	"contributes": {
@@ -54,6 +56,11 @@
 			{
 				"command": "crypto.hexadecimalCalculator",
 				"title": "Hexadecimal calculator",
+				"category": "🔐Crypto"
+			},
+			{
+				"command": "crypto.outputColorPatch",
+				"title": "Fix output channel color conflicts",
 				"category": "🔐Crypto"
 			}
 		],
@@ -93,14 +100,14 @@
 		}
 	],
 		"languages": [{
-			"id": "Crypto-output",
+			"id": "crypto-output",
 			"mimetypes": [
 				"text/x-code-output"
 			]
 		}],
 		"grammars": [{
-			"language": "Crypto-output",
-			"scopeName": "Crypto.output",
+			"language": "crypto-output",
+			"scopeName": "crypto.output",
 			"path": "./syntaxes/crypto-tools-output.tmLanguage"
 		}]
 	},
@@ -114,5 +121,15 @@
 		"eslint": "^4.11.0",
 		"@types/node": "^8.10.25",
 		"@types/mocha": "^2.2.42"
+	},
+	"dependencies": {
+		"bubble_babble": "^0.2.0",
+		"htmlencode": "0.0.4",
+		"iconv-lite": "^0.4.24",
+		"quoted-printable": "^1.0.1",
+		"safer-buffer": "^2.1.2",
+		"urlencode": "^1.1.0",
+		"utf8": "^3.0.0",
+		"xmorse": "0.0.4"
 	}
 }

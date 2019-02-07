@@ -3,7 +3,7 @@
 <plist version="1.0">
     <dict>
         <key>scopeName</key>
-        <string>Crypto.output</string>
+        <string>crypto.output</string>
         <key>name</key>
         <string>Crypto-output</string>
         <key>patterns</key>

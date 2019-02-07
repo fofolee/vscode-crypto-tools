@@ -17,10 +17,10 @@ exports.space2Line = function(text) {
 	return text.replace(/\s/g, "\n");
 }
 exports.convPath = function (text) {
-	if (text.includes("/")) {
-		return text.replace(/\//g, "\\");	
-	} else {
+	if (text.includes("\\")) {
 		return text.replace(/\\/g, "/");	
+	} else {
+		return text.replace(/\//g, "\\");	
 	}
 }
 exports.titleCase = function(text) {

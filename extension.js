@@ -25,7 +25,7 @@ String.prototype.format = function () {
 //显示信息与更新文本
 function print(text) {
 	outputChannel.show();
-	return outputChannel.appendLine(text)
+	outputChannel.appendLine(text);
 }
 
 function showUpdate(alg, before, after, update) {
@@ -303,12 +303,53 @@ async function calculator(text) {
 	}
 }
 
-outputChannel = vscode.window.createOutputChannel('Crypto');
-editor = vscode.window.activeTextEditor;
+//处理text/x-code-output兼容问题
+//获取output channel的高亮语法
+function getPatterns(file) {
+	let content = fs.readFileSync(file, "utf-8");
+	let patterns = /<key>patterns<\/key>[\s|\S]*?<array>([\s|\S]*?)<\/array>/.exec(content)[1];
+	return patterns
+}
+
+//去除相关插件JSON文件里的"text/x-code-output"，以免冲突
+function rmOutput(file) {
+	let content = fs.readFileSync(file, "utf-8");
+	let New = content.replace("text/x-code-output", "text/bak-x-code-output");
+	fs.writeFileSync(file, New);
+}
+
+//获取定义了output channel语法的文件，并整合语法
+function getLang() {
+	let lang = '';
+	const extension = vscode.extensions.all
+	for (let e of extension) {
+		try {
+			let mimetypes = e.packageJSON.contributes.languages[0].mimetypes;
+			if (mimetypes.includes("text/x-code-output")) {
+				let id = e.id;
+				if (id != "fofolee.crypto-tools") {
+					let extensionPath = e.extensionPath;
+					let grammarsPath = e.packageJSON.contributes.grammars[0].path.substr(1);
+					rmOutput(manip.convPath(extensionPath + "/package.json"));
+					print("发现定义了output语法的冲突插件:\n" + extensionPath);
+					file = manip.convPath(extensionPath + grammarsPath);
+					console.log(file);
+					lang += '        <!-- ' + id + ' start -->' + getPatterns(file) + '<!-- ' + id + ' end -->\n';
+				}
+			}
+		} catch (err) {
+		}
+	}
+	return lang
+}
+
+
+outputChannel = vscode.window.createOutputChannel('crypto');
 
 exports.activate = context => {
 	// 注册命令
 	context.subscriptions.push(vscode.commands.registerCommand('crypto.EncodeDecode', async () => {
+		editor = vscode.window.activeTextEditor;
 		selection = editor.selection;
 		let text = editor.document.getText(selection).trim();
 		let algorithm = await vscode.window.showQuickPick([{
@@ -431,6 +472,7 @@ exports.activate = context => {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('crypto.EncryptDecrypt', async () => {
+		editor = vscode.window.activeTextEditor;
 		selection = editor.selection;
 		let text = editor.document.getText(selection).trim();
 		let algorithm = await vscode.window.showQuickPick([{
@@ -518,6 +560,7 @@ exports.activate = context => {
 	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand('crypto.textManipulation', async () => {
+		editor = vscode.window.activeTextEditor;
 		selection = editor.selection;
 		let text = editor.document.getText(selection).trim();
 		let algorithm = await vscode.window.showQuickPick([{
@@ -592,6 +635,25 @@ exports.activate = context => {
 
 	context.subscriptions.push(vscode.commands.registerCommand('crypto.hexadecimalCalculator', () => {
 		calculator("");
+
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand('crypto.outputColorPatch', async () => {
+		let choise = await vscode.window.showInformationMessage("如果安装本插件后，本插件的输出没有高亮，或者造成其他插件的输出没有高亮，则是因为和其他一些插件的输出语法产生了冲突，是否尝试自动修复这些冲突？", "是", "否")
+		if (choise == "是") {
+			print("正在尝试寻找问题···");
+			let langFile = __dirname + "/syntaxes/crypto-tools-output.tmLanguage";
+			let file = fs.readFileSync(langFile, "utf-8");
+			let lang = getLang();
+			let New = file.replace("        </array>", lang + "        </array>");
+			console.log(New);
+			fs.writeFileSync(langFile, New);
+			if (lang) {
+				print("语法文件已整合，请重启编辑器！")
+			} else {
+				print("未发现冲突的文件！")
+			}
+		}
 
 	}));
 

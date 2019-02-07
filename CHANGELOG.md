@@ -1,6 +1,9 @@
-# Change Log
-All notable changes to the "Crypto Tools" language pack will be documented in this file.
+### 0.0.2 (Feb 7 2019)
 
-## [Released]
+- Solve the Conflicts with Output Colorizer extension
+- bug fixes
 
-- February 6, 2019 - Initial release
+### 0.0.1 (Feb 6 2019)
+
+Initial release
+

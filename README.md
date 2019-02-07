@@ -49,6 +49,10 @@ Crypto tools is a powerful tool which contains lots of encoding/decoding and enc
 
 ![](./images/HexadecimalConverter.gif)
 
+>Solve the Conflicts with Output Colorizer extension
+
+- Combine the syntaxes files for each installed output colorizer extension
+
 ## Requirements
 
 Crack hashes online based on HashBuster,so you need to install python and related libraries 
@@ -65,7 +69,15 @@ python3:
 pip install requests
 ```
 
-## Extension Settings
+## Usage
+
+Active the extension as follows:
+
+- Ctrl + shift + P, then just type `crypto` to find the command
+- Select a text, then right click to find the command
+- Use keybindings when a text has been selected
+
+
 
 Default keybindings:
 
@@ -81,6 +93,12 @@ You can change it by yourself
 Submit the [issues](https://github.com/fofolee/vscode-crypto-tools/issues) if you find any bug or have any suggestion.
 
 ## Release Notes
+
+### 0.0.2
+
+- Solve the Conflicts with Output Colorizer extension
+
+- bug fixes
 
 ### 0.0.1
 
