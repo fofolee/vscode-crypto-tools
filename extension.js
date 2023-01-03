@@ -182,7 +182,7 @@ async function symmetricCryption(text, alg) {
 	})
 	if (algorithm) {
 		let value = await vscode.window.showInputBox({
-			placeHolder: '请输入秘钥和初始向量,以逗号隔开,可不填',
+			placeHolder: '请输入秘钥和初始向量,以英文“,”隔开,可不填',
 		});
 		let key = value.split(',')[0] || "";
 		let iv = value.split(',')[1] || "";

@@ -38,7 +38,8 @@
 	],
 	"main": "./extension.js",
 	"contributes": {
-		"commands": [{
+		"commands": [
+			{
 				"command": "crypto.EncodeDecode",
 				"title": "Encoding and Decoding",
 				"category": "🔐Crypto"
@@ -65,7 +66,8 @@
 			}
 		],
 		"menus": {
-			"editor/context": [{
+			"editor/context": [
+				{
 					"when": "editorHasSelection",
 					"command": "crypto.EncodeDecode",
 					"group": "7_modification"
@@ -74,62 +76,70 @@
 					"when": "editorHasSelection",
 					"command": "crypto.EncryptDecrypt",
 					"group": "7_modification"
-				}, {
+				},
+				{
 					"when": "editorHasSelection",
 					"command": "crypto.textManipulation",
 					"group": "7_modification"
 				}
 			]
 		},
-		"keybindings": [{
-			"command": "crypto.EncodeDecode",
-			"key": "ctrl+alt+d",
-			"when": "editorHasSelection"
-		}, {
-			"command": "crypto.EncryptDecrypt",
-			"key": "ctrl+alt+a",
-			"when": "editorHasSelection"
-		}, {
-			"command": "crypto.textManipulation",
-			"key": "ctrl+alt+t",
-			"when": "editorHasSelection"
-		},
-		{
-			"command": "crypto.hexadecimalCalculator",
-			"key": "ctrl+alt+c"
-		}
-	],
-		"languages": [{
-			"id": "crypto-output",
-			"mimetypes": [
-				"text/x-code-output"
-			]
-		}],
-		"grammars": [{
-			"language": "crypto-output",
-			"scopeName": "crypto.output",
-			"path": "./syntaxes/crypto-tools-output.tmLanguage"
-		}]
+		"keybindings": [
+			{
+				"command": "crypto.EncodeDecode",
+				"key": "ctrl+alt+d",
+				"when": "editorHasSelection"
+			},
+			{
+				"command": "crypto.EncryptDecrypt",
+				"key": "ctrl+alt+a",
+				"when": "editorHasSelection"
+			},
+			{
+				"command": "crypto.textManipulation",
+				"key": "ctrl+alt+t",
+				"when": "editorHasSelection"
+			},
+			{
+				"command": "crypto.hexadecimalCalculator",
+				"key": "ctrl+alt+c"
+			}
+		],
+		"languages": [
+			{
+				"id": "crypto-output",
+				"mimetypes": [
+					"text/x-code-output"
+				]
+			}
+		],
+		"grammars": [
+			{
+				"language": "crypto-output",
+				"scopeName": "crypto.output",
+				"path": "./syntaxes/crypto-tools-output.tmLanguage"
+			}
+		]
 	},
 	"scripts": {
 		"postinstall": "node ./node_modules/vscode/bin/install",
 		"test": "node ./node_modules/vscode/bin/test"
 	},
 	"devDependencies": {
-		"typescript": "^3.1.4",
-		"vscode": "^1.1.25",
-		"eslint": "^4.11.0",
+		"@types/mocha": "^2.2.42",
 		"@types/node": "^8.10.25",
-		"@types/mocha": "^2.2.42"
+		"eslint": "^8.31.0",
+		"typescript": "^3.1.4",
+		"vscode": "^1.1.34"
 	},
 	"dependencies": {
 		"bubble_babble": "^0.2.0",
-		"htmlencode": "0.0.4",
+		"htmlencode": "^0.0.4",
 		"iconv-lite": "^0.4.24",
 		"quoted-printable": "^1.0.1",
 		"safer-buffer": "^2.1.2",
 		"urlencode": "^1.1.0",
 		"utf8": "^3.0.0",
-		"xmorse": "0.0.4"
+		"xmorse": "^0.0.4"
 	}
 }
