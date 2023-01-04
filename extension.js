@@ -7,6 +7,7 @@ const manip = require('./scripts/textManipulation')
 const crypto = require('crypto')
 const fs = require('fs')
 const fence = require('./scripts/Fence')
+const jssm4 = require('jssm4')
 
 /**
  * 插件被激活时触发，所有代码总入口
@@ -145,35 +146,42 @@ async function vigenereAutoDecode(text) {
   }
 }
 
+function cryptoCipher(plainText, algorithm, key, iv, encoding = 'base64') {
+  let cipher = crypto.createCipheriv(algorithm, key, iv)
+  return cipher.update(plainText, 'utf8', encoding) + cipher.final(encoding)
+}
+
+function cryptoDecipher(cipher, algorithm, key, iv, encoding = 'base64') {
+  let decipher = crypto.createDecipheriv(algorithm, key, iv)
+  return decipher.update(cipher, encoding, 'utf8') + decipher.final('utf8')
+}
+
 //对称加密
 async function symmetricCryption(text, alg) {
-  let algorithm = await vscode.window.showQuickPick(crypto.getCiphers(), {
+  let ciphers = crypto.getCiphers()
+  ciphers.includes('sm4-ecb') || ciphers.push('sm4-ecb')
+  let algorithm = await vscode.window.showQuickPick(ciphers, {
     placeHolder: '请选择要使用的对称加密算法',
   })
   if (algorithm) {
     let value = await vscode.window.showInputBox({
-      placeHolder: '请输入秘钥和初始向量,以英文“,”隔开,可不填',
+      placeHolder: '请输入秘钥和初始向量(如有),并以英文“,”隔开',
     })
     let key = value.split(',')[0] || ''
     let iv = value.split(',')[1] || ''
     print('Key: ' + key + ' IV: ' + iv)
+    let result
     try {
       if (alg.includes('Encryption')) {
-        if (iv) {
-          var cipher = crypto.createCipheriv(algorithm, key, iv)
-        } else {
-          var cipher = crypto.createCipher(algorithm, key)
-        }
-        var result = cipher.update(text, 'utf8', 'base64')
-        result += cipher.final('base64')
+        result =
+          algorithm === 'sm4-ecb'
+            ? new jssm4(key).encryptData_ECB(text)
+            : cryptoCipher(text, algorithm, key, iv)
       } else {
-        if (iv) {
-          var decipher = crypto.createDecipheriv(algorithm, key)
-        } else {
-          var decipher = crypto.createDecipher(algorithm, key)
-        }
-        var result = decipher.update(text, 'base64', 'utf8')
-        result += decipher.final('utf8')
+        result =
+          algorithm === 'sm4-ecb'
+            ? new jssm4(key).decryptData_ECB(text)
+            : cryptoDecipher(text, algorithm, key, iv)
       }
     } catch (err) {
       print('[ ✘ ] ' + err)
