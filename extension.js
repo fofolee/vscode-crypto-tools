@@ -346,13 +346,18 @@ exports.activate = (context) => {
         [
           {
             label: 'Base64/32/16 Decode',
-            detail: '自动进行base64/32/16解密',
+            detail: '自动进行(url-safe)base64/32/16解密',
             target: basic.baseDecode,
           },
           {
             label: 'Base64 Encode',
             detail: 'base64加密',
             target: basic.base64Encode,
+          },
+          {
+            label: 'Url-Safe Base64 Encode',
+            detail: 'url-safe base64加密',
+            target: basic.urlSafeBase64Encode,
           },
           {
             label: 'Base32 Encode',
