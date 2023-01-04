@@ -136,6 +136,7 @@
 		"bubble_babble": "^0.2.0",
 		"htmlencode": "^0.0.4",
 		"iconv-lite": "^0.4.24",
+		"jssm4": "^1.0.3",
 		"quoted-printable": "^1.0.1",
 		"safer-buffer": "^2.1.2",
 		"urlencode": "^1.1.0",

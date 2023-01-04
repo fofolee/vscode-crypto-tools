@@ -23,33 +23,33 @@ String.prototype.format = function () {
 }
 
 //显示信息与更新文本
-function print(text) {
+function outputChannelShow(text) {
   outputChannel.show()
   outputChannel.appendLine(text)
 }
 
-function showUpdate(alg, before, after, update) {
+function outputChannelUpdate(alg, before, after, update) {
   if (after) {
     //output
-    print('------------------------------------')
-    print('  ◆   ' + alg + ':')
-    print('[ ⇐ ] ' + before)
-    print('[ ⇒ ] ' + after)
+    outputChannelShow('------------------------------------')
+    outputChannelShow('  ◆   ' + alg + ':')
+    outputChannelShow('[ ⇐ ] ' + before)
+    outputChannelShow('[ ⇒ ] ' + after)
     //update
     if (update) {
       editor.edit((editBuilder) => {
         editBuilder.replace(selection, after)
       })
-      print('[ ✔ ] 文本已自动更新，按 Ctrl + Z 撤销')
+      outputChannelShow('[ ✔ ] 文本已自动更新，按 Ctrl + Z 撤销')
     }
-    print('------------------------------------')
+    outputChannelShow('------------------------------------')
   } else {
     vscode.window.showErrorMessage('转换失败！请检查文本类型或查看日志！')
   }
 }
 
 //凯撒
-async function Caesar(text) {
+async function caesarCipher(text) {
   result = caesar.caesar(text)
   console.log(result)
   let choise = await vscode.window.showQuickPick(result, {
@@ -59,11 +59,11 @@ async function Caesar(text) {
     vscode.window.showInformationMessage(
       '选择了位移了' + result.indexOf(choise) + '位的结果',
     )
-    showUpdate('Caesar', text, choise, true)
+    outputChannelUpdate('caesarCipher', text, choise, true)
   }
 }
 //位移
-async function Shift(text) {
+async function characterOffset(text) {
   let value = await vscode.window.showInputBox({
     prompt: '输入最大的位移位数n和方向l或r，以逗号隔开',
     value: '50,l',
@@ -80,12 +80,12 @@ async function Shift(text) {
       vscode.window.showInformationMessage(
         '选择了位移了' + result.indexOf(choise) + '位的结果',
       )
-      showUpdate('Shift', text, choise, true)
+      outputChannelUpdate('characterOffset', text, choise, true)
     }
   }
 }
 //栅栏
-async function Fence(text, alg) {
+async function fenceCipher(text, alg) {
   let result = []
   if (alg.includes('Encode')) {
     for (var i = 2; i < text.length; i++) {
@@ -104,12 +104,12 @@ async function Fence(text, alg) {
     vscode.window.showInformationMessage(
       '选择了栏数为' + (result.indexOf(choise) + 2) + '的结果',
     )
-    showUpdate('Shift', text, choise, true)
+    outputChannelUpdate('fenceCipher', text, choise, true)
   }
 }
 
 //维吉尼亚
-async function Vigenere(text, alg) {
+async function vigenereCipher(text, alg) {
   let key = await vscode.window.showInputBox({
     placeHolder: '输入秘钥',
   })
@@ -119,7 +119,7 @@ async function Vigenere(text, alg) {
     } else {
       var result = vigenere.Vigenere(text, key, false)
     }
-    showUpdate(alg, text, result, true)
+    outputChannelUpdate(alg, text, result, true)
   }
 }
 
@@ -131,8 +131,8 @@ async function vigenereAutoDecode(text) {
       resolve(result)
     })
     result = await guessKey
-    showUpdate('vigenereAutoDecode', text, result[0], false)
-    print('最有可能的key为：' + result[1])
+    outputChannelUpdate('vigenereAutoDecode', text, result[0], false)
+    outputChannelShow('最有可能的key为：' + result[1])
     minlen = result[2] + 1 //如果没猜对，从猜出的秘钥长度+1之后继续猜
     let choise = await vscode.window.showInformationMessage(
       '请在输出日志中确认秘钥和明文是否猜测正确？',
@@ -140,7 +140,7 @@ async function vigenereAutoDecode(text) {
       '否',
     )
     if (choise != '否') {
-      showUpdate('vigenereAutoDecode', text, result[0], true)
+      outputChannelUpdate('vigenereAutoDecode', text, result[0], true)
       break
     }
   }
@@ -155,7 +155,7 @@ function cryptoDecipher(cipher, algorithm, key, iv, encoding = 'base64') {
   let decipher = crypto.createDecipheriv(algorithm, key, iv)
   return decipher.update(cipher, encoding, 'utf8') + decipher.final('utf8')
 }
-
+let latestSymmetricCryptionKeyIv
 //对称加密
 async function symmetricCryption(text, alg) {
   let ciphers = crypto.getCiphers()
@@ -163,31 +163,32 @@ async function symmetricCryption(text, alg) {
   let algorithm = await vscode.window.showQuickPick(ciphers, {
     placeHolder: '请选择要使用的对称加密算法',
   })
-  if (algorithm) {
-    let value = await vscode.window.showInputBox({
-      placeHolder: '请输入秘钥和初始向量(如有),并以英文“,”隔开',
-    })
-    let key = value.split(',')[0] || ''
-    let iv = value.split(',')[1] || ''
-    print('Key: ' + key + ' IV: ' + iv)
-    let result
-    try {
-      if (alg.includes('Encryption')) {
-        result =
-          algorithm === 'sm4-ecb'
-            ? new jssm4(key).encryptData_ECB(text)
-            : cryptoCipher(text, algorithm, key, iv)
-      } else {
-        result =
-          algorithm === 'sm4-ecb'
-            ? new jssm4(key).decryptData_ECB(text)
-            : cryptoDecipher(text, algorithm, key, iv)
-      }
-    } catch (err) {
-      print('[ ✘ ] ' + err)
+  if (!algorithm) return
+  let value = await vscode.window.showInputBox({
+    placeHolder: '请输入秘钥和初始向量(如有),并以英文“,”隔开',
+    value: latestSymmetricCryptionKeyIv || '',
+  })
+  latestSymmetricCryptionKeyIv = value
+  let key = value.split(',')[0] || ''
+  let iv = value.split(',')[1] || ''
+  outputChannelShow('Key: ' + key + ' IV: ' + iv)
+  let result
+  try {
+    if (alg.includes('Encryption')) {
+      result =
+        algorithm === 'sm4-ecb'
+          ? new jssm4(key).encryptData_ECB(text)
+          : cryptoCipher(text, algorithm, key, iv)
+    } else {
+      result =
+        algorithm === 'sm4-ecb'
+          ? new jssm4(key).decryptData_ECB(text)
+          : cryptoDecipher(text, algorithm, key, iv)
     }
-    showUpdate(alg + ' - ' + algorithm, text, result, true)
+  } catch (err) {
+    outputChannelShow('[ ✘ ] ' + err)
   }
+  outputChannelUpdate(alg + ' - ' + algorithm, text, result, true)
 }
 
 //RSA加密
@@ -195,19 +196,19 @@ function checkKey(keyfile, key) {
   let pri = [crypto.privateEncrypt, crypto.privateDecrypt]
   let pub = [crypto.publicEncrypt, crypto.publicDecrypt]
   if (key.includes('PRIVATE')) {
-    print('选择了私钥文件: ' + keyfile)
+    outputChannelShow('选择了私钥文件: ' + keyfile)
     return pri
   } else if (key.includes('PUBLIC')) {
-    print('选择了公钥文件: ' + keyfile)
+    outputChannelShow('选择了公钥文件: ' + keyfile)
     return pub
   } else {
-    print('[ ✘ ] 秘钥格式似乎不对')
-    print('私钥的开头和结尾分别为:')
-    print('-----BEGIN RSA PRIVATE KEY-----')
-    print('-----END RSA PRIVATE KEY-----')
-    print('公钥的开头和结尾分别为:')
-    print('-----BEGIN PUBLIC KEY-----')
-    print('-----END PUBLIC KEY-----')
+    outputChannelShow('[ ✘ ] 秘钥格式似乎不对')
+    outputChannelShow('私钥的开头和结尾分别为:')
+    outputChannelShow('-----BEGIN RSA PRIVATE KEY-----')
+    outputChannelShow('-----END RSA PRIVATE KEY-----')
+    outputChannelShow('公钥的开头和结尾分别为:')
+    outputChannelShow('-----BEGIN PUBLIC KEY-----')
+    outputChannelShow('-----END PUBLIC KEY-----')
   }
 }
 
@@ -226,15 +227,15 @@ async function rsaCryption(text, alg) {
         crypt = checkKey(keyfile, key)[1]
         var result = crypt(key, new Buffer(text, 'base64')).toString('utf8')
       }
-      showUpdate(alg, text, result, true)
+      outputChannelUpdate(alg, text, result, true)
     }
   } catch (err) {
-    print(err)
+    outputChannelShow(err)
   }
 }
 
 //摩斯
-async function Morse(text, alg) {
+async function morseCoding(text, alg) {
   let value = await vscode.window.showInputBox({
     value: "{ space: '/', long: '-', short: '.' }",
     prompt: '请输入对应的间隔符、划、点的符号',
@@ -246,7 +247,7 @@ async function Morse(text, alg) {
     } else {
       var result = morse.decode(text, option)
     }
-    showUpdate(alg, text, result, true)
+    outputChannelUpdate(alg, text, result, true)
   }
 }
 
@@ -273,7 +274,7 @@ async function calculator(text) {
       if (str) {
         log += '\n			str: "{0}"'.format(str)
       }
-      showUpdate('hexadecimalConverter', value, log, false)
+      outputChannelUpdate('hexadecimalConverter', value, log, false)
     } catch (err) {
       vscode.window.showErrorMessage('输入非公式，将先转换成十六进制再计算')
       let hex = '0x' + basic.string2hex(value)
@@ -314,7 +315,7 @@ function getLang() {
             1,
           )
           rmOutput(manip.convPath(extensionPath + '/package.json'))
-          print('发现定义了output语法的冲突插件:\n' + extensionPath)
+          outputChannelShow('发现定义了output语法的冲突插件:\n' + extensionPath)
           file = manip.convPath(extensionPath + grammarsPath)
           console.log(file)
           lang +=
@@ -343,11 +344,6 @@ exports.activate = (context) => {
       let text = editor.document.getText(selection).trim()
       let algorithm = await vscode.window.showQuickPick(
         [
-          {
-            label: 'ROT13',
-            detail: 'ROT13加密',
-            target: basic.rot13,
-          },
           {
             label: 'Base64/32/16 Decode',
             detail: '自动进行base64/32/16解密',
@@ -397,6 +393,21 @@ exports.activate = (context) => {
             label: 'Html Entity Decode',
             detail: 'html解密',
             target: basic.htmlDecode,
+          },
+          {
+            label: 'Morse Encode',
+            detail: '摩斯密码加密',
+            target: morseCoding,
+          },
+          {
+            label: 'Morse Decode',
+            detail: '摩斯密码解密',
+            target: morseCoding,
+          },
+          {
+            label: 'ROT13',
+            detail: 'ROT13加密',
+            target: basic.rot13,
           },
           {
             label: 'Quote-Printable Decode',
@@ -460,7 +471,7 @@ exports.activate = (context) => {
       )
       if (algorithm) {
         let result = algorithm.target(text)
-        showUpdate(algorithm.label, text, result, true)
+        outputChannelUpdate(algorithm.label, text, result, true)
       }
     }),
   )
@@ -495,47 +506,37 @@ exports.activate = (context) => {
           {
             label: 'Caesar Cipher',
             detail: '凯撒密码',
-            target: Caesar,
+            target: caesarCipher,
           },
           {
             label: 'Character Offset',
             detail: '字符位移',
-            target: Shift,
+            target: characterOffset,
           },
           {
             label: 'Fence Decode',
             detail: '栅栏密码解密',
-            target: Fence,
+            target: fenceCipher,
           },
           {
             label: 'Fence Encode',
             detail: '栅栏密码加密',
-            target: Fence,
+            target: fenceCipher,
           },
           {
             label: 'Vigenere Encode',
             detail: '维基尼亚加密',
-            target: Vigenere,
+            target: vigenereCipher,
           },
           {
             label: 'Vigenere Decode',
             detail: '维基尼亚解密',
-            target: Vigenere,
+            target: vigenereCipher,
           },
           {
             label: 'Vigenere Decode with No Key',
             detail: '维基尼亚无秘钥解密',
             target: vigenereAutoDecode,
-          },
-          {
-            label: 'Morse Encode',
-            detail: '摩斯密码加密',
-            target: Morse,
-          },
-          {
-            label: 'Morse Decode',
-            detail: '摩斯密码解密',
-            target: Morse,
           },
         ],
         {
@@ -618,9 +619,9 @@ exports.activate = (context) => {
       if (algorithm) {
         let result = algorithm.target(text)
         if (algorithm.label != 'String Lenght') {
-          showUpdate(algorithm.label, text, result, true)
+          outputChannelUpdate(algorithm.label, text, result, true)
         } else {
-          showUpdate(algorithm.label, text, result, false)
+          outputChannelUpdate(algorithm.label, text, result, false)
           vscode.window.showInformationMessage('长度为：' + result)
         }
       }
@@ -641,7 +642,7 @@ exports.activate = (context) => {
         '否',
       )
       if (choise == '是') {
-        print('正在尝试寻找问题···')
+        outputChannelShow('正在尝试寻找问题···')
         let langFile = __dirname + '/syntaxes/crypto-tools-output.tmLanguage'
         let file = fs.readFileSync(langFile, 'utf-8')
         let lang = getLang()
@@ -649,9 +650,9 @@ exports.activate = (context) => {
         console.log(New)
         fs.writeFileSync(langFile, New)
         if (lang) {
-          print('语法文件已整合，请重启编辑器！')
+          outputChannelShow('语法文件已整合，请重启编辑器！')
         } else {
-          print('未发现冲突的文件！')
+          outputChannelShow('未发现冲突的文件！')
         }
       }
     }),
