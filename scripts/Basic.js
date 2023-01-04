@@ -45,7 +45,7 @@ exports.string2bin = function (str) {
 }
 
 exports.base64Encode = function (str) {
-  return new Buffer(str,"ascii").toString('base64');
+  return new Buffer(str, "utf8").toString('base64');
 }
 
 exports.base64Decode = function (str) {
