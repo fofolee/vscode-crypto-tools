@@ -9,9 +9,6 @@ const bubble = require('bubble_babble')
 const brainfuck = require('./brainfuck')
 
 exports.hex2string = function (str) {
-  if (str.length % 2) {
-    str = '0' + str
-  }
   return new Buffer(str, 'hex').toString()
 }
 
@@ -28,15 +25,12 @@ exports.string2number = function (str) {
 }
 
 exports.bin2string = function (str) {
-  if (!str.length % 8) {
-    var s = ''
-    for (var i = 0; i < str.length; i += 8) {
-      s += String.fromCharCode(parseInt(str.slice(i, i + 8), 2))
-    }
-    return s
-  } else {
-    console.log('The length is not a multiple of 8')
+  if (!str.length % 8) return
+  var s = ''
+  for (var i = 0; i < str.length; i += 8) {
+    s += String.fromCharCode(parseInt(str.slice(i, i + 8), 2))
   }
+  return s
 }
 
 exports.string2bin = function (str) {
